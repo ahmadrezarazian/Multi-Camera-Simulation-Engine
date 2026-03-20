@@ -1,0 +1,12 @@
+# --- Core Rendering & 3D Math ---
+PyOpenGL>=3.1.5
+glfw>=2.5.0
+pyrr>=0.10.3
+numpy>=1.20.0
+
+# --- Web Interface & Streaming ---
+Flask>=2.0.0
+opencv-python>=4.5.0
+
+# --- Image Processing & Utilities ---
+Pillow>=8.0.0

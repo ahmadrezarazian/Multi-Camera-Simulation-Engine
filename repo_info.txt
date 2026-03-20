@@ -1,0 +1,8 @@
+Name: Multi-Camera Simulation Engine
+Repo Name: Multi-Camera-Simulation-Engine
+Description: A Python-based offscreen 3D camera simulation project that renders a simple scene with a rotating virtual camera and publishes the result as a fake IP camera stream for imaging system simulation experiments.
+Keywords: python, moderngl, flask, opengl, imaging, camera, simulation, virtual-camera, ip-camera, mjpeg, computer-vision, rendering, offscreen-rendering, shader, consumer-hardware
+Description (Short): Minimal virtual imaging system simulator with one render target, one rotating camera, and one MJPEG IP camera output.
+Version Update:
+- v1.0: Initial minimal project structure and single camera render-to-target stream.
+- v1.1: Updated project naming, added repo info file, added doc examples, added temp folder, and improved git ignore setup.
