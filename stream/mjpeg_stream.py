@@ -5,25 +5,21 @@ from flask import Response
 
 
 class MjpegStreamer:
-    def __init__(self, renderer=None, fps=30, show_osd=True, width=640, height=480):
+    def __init__(self, renderer=None, app_state=None, show_osd=True):
         self.renderer = renderer
-        self.fps = fps
+        self.app_state = app_state # AppState instance to access dynamic settings
         self.show_osd = show_osd
-        self.width = width
-        self.height = height
 
     def frame_generator(self):
-        delay = 1.0 / max(1, int(self.fps))
+        # Get current FPS from settings
+        current_fps = self.app_state.settings["app"]["fps"]
+        delay = 1.0 / max(1, int(current_fps))
         frame_id = 0
 
         while True:
+            self.app_state.reload() # Reload settings on each frame for dynamic updates
             frame_r = self.renderer.render_frame()
-            # try:
-            #     frame_r = self.renderer.render_frame()
-            # except Exception as e:
-            #     print(f"Error occurred while rendering frame: {e}")
-            #     frame_r = None
-            #     continue
+            #frame_r = self.renderer.render_frame(self.app_state.settings)
 
             if frame_r is None:
                 continue
@@ -32,10 +28,7 @@ class MjpegStreamer:
             frame = cv2.cvtColor(frame_r, cv2.COLOR_RGB2BGR)
 
             # save debug image
-            cv2.imwrite("debug_frame.png", frame)
-
-            # print("dtype:", frame.dtype, "shape:", frame.shape,
-            #       "min:", frame.min(), "max:", frame.max())
+            cv2.imwrite("frame_generator_out.png", frame)
 
             if frame.dtype != np.uint8:
                 frame = np.clip(frame, 0, 255).astype(np.uint8)
@@ -45,7 +38,6 @@ class MjpegStreamer:
             elif frame.shape[2] == 4:
                 frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2BGR)
             else:
-                # keep as-is; your renderer output is effectively BGR for this stream path
                 frame = frame.copy()
 
             frame = np.ascontiguousarray(frame)

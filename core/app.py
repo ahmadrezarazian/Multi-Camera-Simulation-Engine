@@ -10,9 +10,8 @@ class MiniCamSimApp:
         self.state = AppState()
         self.flask_app = Flask(__name__, template_folder='../web/templates', static_folder='../web/static')
 
-        settings = self.state.settings
-        self.renderer = Renderer(settings)
-        self.streamer = MjpegStreamer(self.renderer, fps=settings['app']['fps'])
+        self.renderer = Renderer(self.state.settings) # Pass initial settings
+        self.streamer = MjpegStreamer(self.renderer, app_state=self.state) # Pass app_state for dynamic settings
 
         register_routes(self.flask_app, self.streamer)
 
