@@ -7,3 +7,4 @@ Version Update:
 - v1.0: Initial minimal project structure and single camera render-to-target stream.
 - v1.1: Updated project naming, added repo info file, added doc examples, added temp folder, and improved git ignore setup.
 - v1.2: Adding setting/config to the app, fix render issue for diffuse render.
+- v1.2.1: Adjusted default resolution to 720x480 for performance optimization, added versioning to config management, and updated UI to v1.2.1.

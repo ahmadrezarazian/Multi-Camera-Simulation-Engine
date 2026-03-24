@@ -7,7 +7,7 @@
 
 A high-performance, Python-based offscreen 3D camera simulation engine. It renders a virtual scene with a rotating camera using OpenGL and publishes the result as a real-time MJPEG IP camera stream, designed specifically for imaging system simulation experiments and computer vision testing.
 
-![Simulation Demo](doc/image1_1.png)
+![Simulation Demo](doc/image002_1.png)
 
 ---
 
@@ -103,22 +103,23 @@ Once running, the engine starts a local Flask server:
 ### Live Stream Preview
 When you access the direct stream or the web dashboard, you will see the real-time offscreen rendered view:
 
-![Live MJPEG Stream Screenshot](doc/image1_2.png)
+![Live MJPEG Stream Screenshot](doc/image002_2.png)
 *(Note: Example of the real-time rotating camera feed served via MJPEG over HTTP)*
 
 ## ⚙️ Configuration
 
 The engine is highly customizable via `config/settings.json`. The file is automatically generated with defaults on the first run.
 
-### Default Configuration Schema
+### Default Configuration Schema (v1.2.1)
 ```json
 {
+  "version": "1.2.1",
   "app": {
     "host": "127.0.0.1",
     "port": 5000,
     "fps": 30,
-    "width": 1280,
-    "height": 720
+    "width": 720,
+    "height": 480
   },
   "camera": {
     "radius": 8.0,

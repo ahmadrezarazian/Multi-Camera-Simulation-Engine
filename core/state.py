@@ -8,12 +8,13 @@ class AppState:
 
     def load(self):
         default_settings = {
+            "version": "1.2.1",
             "app": {
                 "host": "127.0.0.1",
                 "port": 5000,
                 "fps": 30,
-                "width": 1280,
-                "height": 720
+                "width": 720,
+                "height": 480
             },
             "scene": {
                 "Name": "Simulation Scene",
