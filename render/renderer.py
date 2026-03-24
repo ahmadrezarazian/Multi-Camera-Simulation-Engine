@@ -145,7 +145,7 @@ class Renderer:
                 glViewport(0, 0, self.width, self.height)
 
                 # Get background color from settings
-                bg_color = self.settings["scene"]["BackgroundColor"]
+                bg_color = self.settings["scene"]["background_color"]
                 glClearColor(bg_color[0], bg_color[1], bg_color[2], 1.0)
                 #glClearColor(1.0, 0.0, 0.0, 1.0)  # Red background for debugging
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -153,32 +153,36 @@ class Renderer:
                 glUseProgram(self.shader)
                 
                 # Camera settings
-                camera_settings = self.settings["scene"]["Camera"]
+                camera_settings = self.settings["scene"]["camera"]
+                motion_delay = camera_settings["motion_delay"]
                 time = glfw.get_time()
-                if camera_settings["MotionType"] == "AutoRotateOnTarget":
-                    orbit_radius = math.sqrt((camera_settings["Position"][0] - camera_settings["Target"][0])**2 + (camera_settings["Position"][1] - camera_settings["Target"][1])**2 + (camera_settings["Position"][2] - camera_settings["Target"][2])**2)
-                    orbit_height = camera_settings["Position"][1]
-                    angular_speed_deg = camera_settings["MotionSpeed"] * 10 # Multiply by 10 for more noticeable speed
-                    angular_speed_rad = np.radians(angular_speed_deg)
-                    cam_pos = Vector3([np.sin(time * angular_speed_rad) * orbit_radius, orbit_height, np.cos(time * angular_speed_rad) * orbit_radius])
+                app_fps = self.settings["app"]["fps"]
+                if camera_settings["motion_type"] == "AutoRotateOnTarget":
+                    camera_time = motion_delay + time
+                    orbit_radius = math.sqrt((camera_settings["position"][0] - camera_settings["target"][0])**2 + (camera_settings["position"][1] - camera_settings["target"][1])**2 + (camera_settings["position"][2] - camera_settings["target"][2])**2)
+                    orbit_height = camera_settings["position"][1]
+                    angular_speed_deg = camera_settings["motion_speed"] 
+                    camera_angle = camera_time * angular_speed_deg
+                    camera_angle_rad = np.radians(camera_angle)
+                    cam_pos = Vector3([np.sin(camera_angle_rad) * orbit_radius, orbit_height, np.cos(camera_angle_rad) * orbit_radius])
                 else: # "Off"
-                    cam_pos = Vector3(camera_settings["Position"])
+                    cam_pos = Vector3(camera_settings["position"])
 
-                target_pos = Vector3(camera_settings["Target"])
-                up_vector = Vector3(camera_settings["Up"])
+                target_pos = Vector3(camera_settings["target"])
+                up_vector = Vector3(camera_settings["up"])
 
-                fov = camera_settings["FOV"]
-                near_clip = camera_settings["NearClip"]
-                far_clip = camera_settings["FarClip"]
+                fov = camera_settings["fov"]
+                near_clip = camera_settings["near_clip"]
+                far_clip = camera_settings["far_clip"]
                 aspect_ratio = float(self.width) / float(self.height) # Always calculate based on current framebuffer size
 
                 proj = Matrix44.perspective_projection(fov, aspect_ratio, near_clip, far_clip)
                 view = Matrix44.look_at(cam_pos, target_pos, up_vector)
 
                 # Lighting settings
-                light_settings = self.settings["scene"]["Light"]
-                light_pos = Vector3(light_settings["Position"])
-                light_target = Vector3(light_settings["Target"])
+                light_settings = self.settings["scene"]["light"]
+                light_pos = Vector3(light_settings["position"])
+                light_target = Vector3(light_settings["target"])
                 light_direction = (light_target - light_pos)
                 light_direction = light_direction / np.linalg.norm(light_direction) # Normalize for directional light
                 
@@ -187,7 +191,7 @@ class Renderer:
                 glUniform3fv(glGetUniformLocation(self.shader, "viewPos"), 1, cam_pos.astype(np.float32))
                 glUniformMatrix4fv(glGetUniformLocation(self.shader, "proj"), 1, GL_FALSE, proj.astype(np.float32))
                 glUniformMatrix4fv(glGetUniformLocation(self.shader, "view"), 1, GL_FALSE, view.astype(np.float32))
-                glUniform1f(glGetUniformLocation(self.shader, "ambientStr"), float(self.settings["scene"]["Ambient"])) # Ambient strength
+                glUniform1f(glGetUniformLocation(self.shader, "ambientStr"), float(self.settings["scene"]["ambient"])) # Ambient strength
 
                 # Ground
                 glUniform1i(glGetUniformLocation(self.shader, "is_ground"), 1)

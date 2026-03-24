@@ -8,30 +8,31 @@
     "height": 480
   },
   "scene": {
-    "Name": "Simulation Scene",
-    "Ambient": 0.3,
-    "BackgroundColor": [0.9, 0.1, 0.1],
-    "Light": {
-      "Name": "Main Light",
-      "Type": "directional",
-      "Position": [1.0, 2.0, 3.0],
-      "Target": [0.0, 0.0, 0.0],
-      "DiffuseColor": [1.0, 1.0, 1.0],
-      "SpecularColor": [1.0, 1.0, 1.0],
-      "Power": 1.0
+    "name": "Simulation Scene",
+    "ambient": 0.3,
+    "background_color": [0.9, 0.1, 0.1],
+    "light": {
+      "name": "Main Light",
+      "type": "directional",
+      "position": [1.0, 2.0, 3.0],
+      "target": [0.0, 0.0, 0.0],
+      "diffuse_color": [1.0, 1.0, 1.0],
+      "specular_color": [1.0, 1.0, 1.0],
+      "power": 1.0
     },
-    "Camera": {
-      "Name": "Orbit Camera",
-      "ViewType": "Mono",
-      "MotionType": "AutoRotateOnTarget",
-      "MotionSpeed": 1.0,
-      "Position": [4.0, 2.0, 4.0],
-      "Target": [0.0, 0.0, 0.0],
-      "Up": [0.0, 1.0, 0.0],
-      "FOV": 45.0,
-      "NearClip": 0.1,
-      "FarClip": 100.0,
-      "AspectRatio": 1.77
+    "camera": {
+      "name": "Orbit Camera",
+      "motion_type": "AutoRotateOnTarget",
+      "motion_speed": 20.0,
+      "motion_delay": 0.0,
+      "position": [4.0, 2.0, 4.0],
+      "target": [0.0, 0.0, 0.0],
+      "up": [0.0, 1.0, 0.0],
+      "fov": 45.0,
+      "near_clip": 0.1,
+      "far_clip": 100.0,
+      "aspect_ratio": 1.77,
+      "color_type": "RGB"
     }
   }
 }
