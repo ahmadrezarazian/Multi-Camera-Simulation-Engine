@@ -1,5 +1,5 @@
-from core.app import MiniCamSimApp
+from core.app import MultiCamSimApp
 
 
 if __name__ == '__main__':
-    MiniCamSimApp().run()
+    MultiCamSimApp().run()

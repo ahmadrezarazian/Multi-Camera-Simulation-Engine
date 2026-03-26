@@ -43,7 +43,7 @@ This repository represents the **beginning of a medium-to-large scale open-sourc
 Multi-Camera-Simulation-Engine/
 ├── config/             # Application and camera configuration (settings.json)
 ├── core/               # Orchestration and state management
-│   ├── app.py          # Main application orchestrator (MiniCamSimApp)
+│   ├── app.py          # Main application orchestrator (MultiCamSimApp)
 │   └── state.py        # Settings loader and global state management
 ├── doc/                # Documentation assets and diagrams
 ├── effects/            # Post-processing and image effect hooks
@@ -140,7 +140,7 @@ The engine is highly customizable via `config/settings.json`. The file is automa
 
 The Multi-Camera Simulation Engine is built around a modular architecture to ensure scalability:
 
-- **`MiniCamSimApp` (`core/app.py`)**: The central orchestrator. It initializes the `AppState`, `Renderer`, and `MjpegStreamer` and registers the web routes.
+- **`MultiCamSimApp` (`core/app.py`)**: The central orchestrator. It initializes the `AppState`, `Renderer`, and `MjpegStreamer` and registers the web routes.
 - **`AppState` (`core/state.py`)**: Manages global application state and loads configuration from `settings.json`.
 - **`Renderer` (`render/renderer.py`)**: The heart of the 3D visualization. It handles:
     - **GLFW Context Management**: Initializes a hidden GLFW window and manages the OpenGL context, crucial for thread-safe rendering in a multi-threaded Flask environment.

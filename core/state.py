@@ -8,7 +8,7 @@ class AppState:
 
     def load(self):
         default_settings = {
-            "version": "1.2.1",
+            "version": "1.2.3",
             "app": {
                 "host": "127.0.0.1",
                 "port": 5000,

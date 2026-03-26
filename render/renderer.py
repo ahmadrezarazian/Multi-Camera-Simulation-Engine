@@ -136,7 +136,7 @@ class Renderer:
     def render_frame(self):
         if not self.init_done:
             return np.zeros((self.height, self.width, 3), dtype=np.uint8)
-        
+           
         with self.render_lock:
             glfw.make_context_current(self.window)
             try:
