@@ -113,7 +113,7 @@ The engine is highly customizable via `config/settings.json`. The file is automa
 ### Default Configuration Schema (v1.2.1)
 ```json
 {
-  "version": "1.2.1",
+  "version": "1.2.3",
   "app": {
     "host": "127.0.0.1",
     "port": 5000,
