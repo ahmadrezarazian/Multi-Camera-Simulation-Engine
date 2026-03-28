@@ -16,9 +16,18 @@
 <div class="wrap">
     <div class="card">
         <h1>Multi-Camera Simulation v{{ app_version }}</h1>
-        <p>Single offscreen rendered virtual camera streamed as MJPEG.</p>
-        <p>Direct stream: <a href="/cam">/cam</a></p>
-        <img src="/cam" alt="camera stream">
+        <p>Offscreen rendered virtual cameras streamed as MJPEG.</p>
+        
+        <h2>Available Cameras</h2>
+        <ul>
+            {% for camera in cameras %}
+            <li>
+                <strong>{{ camera.name }} (ID: {{ camera.id }})</strong>: 
+                <a href="{{ camera.url }}" target="_blank">{{ camera.url }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        
     </div>
 </div>
 </body>

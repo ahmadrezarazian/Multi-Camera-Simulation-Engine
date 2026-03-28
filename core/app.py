@@ -19,4 +19,6 @@ class MultiCamSimApp:
 
     def run(self):
         app_cfg = self.state.settings['app']
+        # Note: Camera streams will start on port + cam_id (e.g., 5001, 5002...)
+        # Main UI will remain on the configured port.
         self.flask_app.run(host=app_cfg['host'], port=app_cfg['port'], threaded=True)

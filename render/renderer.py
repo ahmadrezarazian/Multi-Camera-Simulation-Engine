@@ -135,86 +135,95 @@ class Renderer:
 
     def render_frame(self):
         if not self.init_done:
-            return np.zeros((self.height, self.width, 3), dtype=np.uint8)
+            return []
            
         with self.render_lock:
             glfw.make_context_current(self.window)
             try:
-                glBindFramebuffer(GL_FRAMEBUFFER, self.fbo)
-                glEnable(GL_DEPTH_TEST)
-                glViewport(0, 0, self.width, self.height)
-
-                # Get background color from settings
-                bg_color = self.settings["scene"]["background_color"]
-                glClearColor(bg_color[0], bg_color[1], bg_color[2], 1.0)
-                #glClearColor(1.0, 0.0, 0.0, 1.0)  # Red background for debugging
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-                glUseProgram(self.shader)
+                images_rgb = []
+                cameras = self.settings["scene"]["cameras"]
                 
-                # Camera settings
-                camera_settings = self.settings["scene"]["camera"]
-                motion_delay = camera_settings["motion_delay"]
-                time = glfw.get_time()
-                app_fps = self.settings["app"]["fps"]
-                if camera_settings["motion_type"] == "AutoRotateOnTarget":
-                    camera_time = motion_delay + time
-                    orbit_radius = math.sqrt((camera_settings["position"][0] - camera_settings["target"][0])**2 + (camera_settings["position"][1] - camera_settings["target"][1])**2 + (camera_settings["position"][2] - camera_settings["target"][2])**2)
-                    orbit_height = camera_settings["position"][1]
-                    angular_speed_deg = camera_settings["motion_speed"] 
-                    camera_angle = camera_time * angular_speed_deg
-                    camera_angle_rad = np.radians(camera_angle)
-                    cam_pos = Vector3([np.sin(camera_angle_rad) * orbit_radius, orbit_height, np.cos(camera_angle_rad) * orbit_radius])
-                else: # "Off"
-                    cam_pos = Vector3(camera_settings["position"])
+                for camera_settings in cameras:
+                    glBindFramebuffer(GL_FRAMEBUFFER, self.fbo)
+                    glEnable(GL_DEPTH_TEST)
+                    glViewport(0, 0, self.width, self.height)
 
-                target_pos = Vector3(camera_settings["target"])
-                up_vector = Vector3(camera_settings["up"])
+                    # Get background color from settings
+                    bg_color = self.settings["scene"]["background_color"]
+                    glClearColor(bg_color[0], bg_color[1], bg_color[2], 1.0)
+                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-                fov = camera_settings["fov"]
-                near_clip = camera_settings["near_clip"]
-                far_clip = camera_settings["far_clip"]
-                aspect_ratio = float(self.width) / float(self.height) # Always calculate based on current framebuffer size
+                    glUseProgram(self.shader)
+                    
+                    # Camera settings
+                    camera_id = camera_settings.get("id", 0)
+                    motion_delay = camera_settings["motion_delay"]
+                    time = glfw.get_time()
+                    if camera_settings["motion_type"] == "AutoRotateOnTarget":
+                        camera_time = motion_delay + time
+                        orbit_radius = math.sqrt((camera_settings["position"][0] - camera_settings["target"][0])**2 + (camera_settings["position"][1] - camera_settings["target"][1])**2 + (camera_settings["position"][2] - camera_settings["target"][2])**2)
+                        orbit_height = camera_settings["position"][1]
+                        angular_speed_deg = camera_settings["motion_speed"] 
+                        camera_angle = camera_time * angular_speed_deg
+                        camera_angle_rad = np.radians(camera_angle)
+                        cam_pos = Vector3([np.sin(camera_angle_rad) * orbit_radius, orbit_height, np.cos(camera_angle_rad) * orbit_radius])
+                    else: # "Off"
+                        cam_pos = Vector3(camera_settings["position"])
 
-                proj = Matrix44.perspective_projection(fov, aspect_ratio, near_clip, far_clip)
-                view = Matrix44.look_at(cam_pos, target_pos, up_vector)
+                    target_pos = Vector3(camera_settings["target"])
+                    up_vector = Vector3(camera_settings["up"])
 
-                # Lighting settings
-                light_settings = self.settings["scene"]["light"]
-                light_pos = Vector3(light_settings["position"])
-                light_target = Vector3(light_settings["target"])
-                light_direction = (light_target - light_pos)
-                light_direction = light_direction / np.linalg.norm(light_direction) # Normalize for directional light
+                    fov = camera_settings["fov"]
+                    near_clip = camera_settings["near_clip"]
+                    far_clip = camera_settings["far_clip"]
+                    aspect_ratio = float(self.width) / float(self.height)
+
+                    proj = Matrix44.perspective_projection(fov, aspect_ratio, near_clip, far_clip)
+                    view = Matrix44.look_at(cam_pos, target_pos, up_vector)
+
+                    # Lighting settings
+                    light_settings = self.settings["scene"]["light"]
+                    light_pos = Vector3(light_settings["position"])
+                    light_target = Vector3(light_settings["target"])
+                    light_direction = (light_target - light_pos)
+                    light_direction = light_direction / np.linalg.norm(light_direction) # Normalize for directional light
+                    
+                    # Update uniform values
+                    glUniform3fv(glGetUniformLocation(self.shader, "lightDir"), 1, light_direction.astype(np.float32))
+                    glUniform3fv(glGetUniformLocation(self.shader, "viewPos"), 1, cam_pos.astype(np.float32))
+                    glUniformMatrix4fv(glGetUniformLocation(self.shader, "proj"), 1, GL_FALSE, proj.astype(np.float32))
+                    glUniformMatrix4fv(glGetUniformLocation(self.shader, "view"), 1, GL_FALSE, view.astype(np.float32))
+                    glUniform1f(glGetUniformLocation(self.shader, "ambientStr"), float(self.settings["scene"]["ambient"]))
+
+                    # Ground
+                    glUniform1i(glGetUniformLocation(self.shader, "is_ground"), 1)
+                    glUniformMatrix4fv(glGetUniformLocation(self.shader, "model"), 1, GL_FALSE, np.identity(4, dtype=np.float32))
+                    glBindVertexArray(self.ground_vao)
+                    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, None)
+
+                    # Box
+                    glUniform1i(glGetUniformLocation(self.shader, "is_ground"), 0)
+                    glUniformMatrix4fv(glGetUniformLocation(self.shader, "model"), 1, GL_FALSE, np.identity(4, dtype=np.float32))
+                    glBindVertexArray(self.cube_vao)
+                    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, None)
+
+                    # Read Pixels
+                    glPixelStorei(GL_PACK_ALIGNMENT, 1)
+                    data = glReadPixels(0, 0, self.width, self.height, GL_RGB, GL_UNSIGNED_BYTE)
+                    img_rgb = np.frombuffer(data, dtype=np.uint8).reshape((self.height, self.width, 3))
+                    # Flip image vertically (OpenGL coordinate system vs Image coordinate system)
+                    img_bgr = cv2.cvtColor(cv2.flip(img_rgb, 0), cv2.COLOR_RGB2BGR)
+                    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_RGB2BGR)
+                    #img_bgr = cv2.cvtColor(cv2.flip(img_rgb, 0))
+                    #img_bgr = cv2.flip(img_rgb, 0)[:, :, ::-1]
+                    
+                    
+                    # Save Debug
+                    cv2.imwrite(f"frame_render_frame_{camera_id}.png", img_rgb)
+                    
+                    images_rgb.append(img_rgb)
                 
-                # Update uniform values
-                glUniform3fv(glGetUniformLocation(self.shader, "lightDir"), 1, light_direction.astype(np.float32))
-                glUniform3fv(glGetUniformLocation(self.shader, "viewPos"), 1, cam_pos.astype(np.float32))
-                glUniformMatrix4fv(glGetUniformLocation(self.shader, "proj"), 1, GL_FALSE, proj.astype(np.float32))
-                glUniformMatrix4fv(glGetUniformLocation(self.shader, "view"), 1, GL_FALSE, view.astype(np.float32))
-                glUniform1f(glGetUniformLocation(self.shader, "ambientStr"), float(self.settings["scene"]["ambient"])) # Ambient strength
-
-                # Ground
-                glUniform1i(glGetUniformLocation(self.shader, "is_ground"), 1)
-                glUniformMatrix4fv(glGetUniformLocation(self.shader, "model"), 1, GL_FALSE, np.identity(4, dtype=np.float32))
-                glBindVertexArray(self.ground_vao)
-                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, None)
-
-                # Box
-                glUniform1i(glGetUniformLocation(self.shader, "is_ground"), 0)
-                glUniformMatrix4fv(glGetUniformLocation(self.shader, "model"), 1, GL_FALSE, np.identity(4, dtype=np.float32))
-                glBindVertexArray(self.cube_vao)
-                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, None)
-
-                # Read Pixels
-                glPixelStorei(GL_PACK_ALIGNMENT, 1)
-                data = glReadPixels(0, 0, self.width, self.height, GL_RGB, GL_UNSIGNED_BYTE)
-                img_rgb = np.frombuffer(data, dtype=np.uint8).reshape((self.height, self.width, 3))
-                img_bgr = cv2.cvtColor(np.flipud(img_rgb), cv2.COLOR_RGB2BGR)
-                
-                # Save Debug
-                cv2.imwrite("frame_render_frame.png", img_bgr)
-                
-                return img_bgr
+                return images_rgb
 
             finally:
                 glfw.make_context_current(None)
