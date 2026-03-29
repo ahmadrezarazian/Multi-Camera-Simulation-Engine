@@ -7,7 +7,7 @@
 
 A high-performance, Python-based offscreen 3D camera simulation engine. It renders a virtual scene with a rotating camera using OpenGL and publishes the result as a real-time MJPEG IP camera stream, designed specifically for imaging system simulation experiments and computer vision testing.
 
-![Simulation Demo](doc/image002_1.png)
+![Multi-Camera Simulation Demo](doc/image003_1.png)
 
 ---
 
@@ -30,6 +30,7 @@ This repository represents the **beginning of a medium-to-large scale open-sourc
 
 ## 🚀 Key Features
 
+- **Multi-Camera Support (v1.3.1)**: Simultaneously render and stream from multiple virtual cameras, each with independent configurations and unique MJPEG stream ports.
 - **Real-time 3D Rendering**: High-performance rendering via OpenGL 3.3+ with Phong shading (ambient, diffuse, specular) and directional lighting.
 - **Thread-Safe Offscreen Pipeline**: Uses hidden GLFW windows and custom Framebuffer Objects (FBOs) for background rendering, optimized for multi-threaded Flask environments.
 - **MJPEG IP Camera Stream**: Efficiently broadcasts rendered frames over HTTP, mimicking a real network-attached camera.
@@ -41,24 +42,35 @@ This repository represents the **beginning of a medium-to-large scale open-sourc
 
 ```text
 Multi-Camera-Simulation-Engine/
-├── config/             # Application and camera configuration (settings.json)
-├── core/               # Orchestration and state management
-│   ├── app.py          # Main application orchestrator (MultiCamSimApp)
-│   └── state.py        # Settings loader and global state management
-├── doc/                # Documentation assets and diagrams
-├── effects/            # Post-processing and image effect hooks
-├── render/             # OpenGL rendering engine
-│   ├── camera.py       # Camera view and projection logic
-│   └── renderer.py     # OpenGL context, shaders, and geometry management
-├── stream/             # Video broadcasting components
-│   └── mjpeg_stream.py # MJPEG encoding and HTTP streaming logic
-├── utils/              # General utility helpers
-├── web/                # Flask web interface
-│   ├── routes.py       # API and stream endpoints
-│   ├── static/         # CSS/JS assets
-│   └── templates/      # Dashboard UI (index.html)
-├── main.py             # Application entry point
-└── requirements.txt    # Project dependencies
+├── config/
+│   └── settings.json
+├── core/
+│   ├── app.py
+│   └── state.py
+├── doc/
+│   ├── image003_1.png
+│   ├── image003_2.png
+│   └── video003_01.mp4
+├── doc.me/
+├── effects/
+│   └── image_effects.py
+├── render/
+│   ├── camera.py
+│   └── renderer.py
+├── stream/
+│   └── mjpeg_stream.py
+├── utils/
+│   └── helpers.py
+├── web/
+│   ├── routes.py
+│   ├── static/
+│   └── templates/
+│       └── index.html
+├── LICENSE
+├── main.py
+├── README.md
+├── repo_info.txt
+└── requirements.txt
 ```
 
 ## 🛠️ Installation & Setup
@@ -98,43 +110,16 @@ python main.py
 
 Once running, the engine starts a local Flask server:
 - **Web Dashboard**: [http://localhost:5000](http://localhost:5000)
-- **Direct MJPEG Stream**: [http://localhost:5000/cam](http://localhost:5000/cam)
+- **Camera 0 Stream**: [http://localhost:5001/cam](http://localhost:5001/cam)
+- **Camera 1 Stream**: [http://localhost:5002/cam](http://localhost:5002/cam)
+
+*(Note: Each additional camera is assigned a unique port starting from 5001, while the main dashboard remains on 5000.)*
 
 ### Live Stream Preview
-When you access the direct stream or the web dashboard, you will see the real-time offscreen rendered view:
+When you access the direct stream or the web dashboard, you will see the real-time offscreen rendered view. Version 1.3.1 introduces multi-camera support, allowing for independent streams from multiple virtual cameras:
 
-![Live MJPEG Stream Screenshot](doc/image002_2.png)
-*(Note: Example of the real-time rotating camera feed served via MJPEG over HTTP)*
-
-## ⚙️ Configuration
-
-The engine is highly customizable via `config/settings.json`. The file is automatically generated with defaults on the first run.
-
-### Default Configuration Schema (v1.2.1)
-```json
-{
-  "version": "1.2.3",
-  "app": {
-    "host": "127.0.0.1",
-    "port": 5000,
-    "fps": 30,
-    "width": 720,
-    "height": 480
-  },
-  "camera": {
-    "radius": 8.0,
-    "height": 3.5,
-    "angular_speed_deg": 20.0,
-    "target": [0.0, 0.5, 0.0],
-    "fov_deg": 45.0,
-    "near": 0.1,
-    "far": 100.0
-  },
-  "light": {
-    "position": [6.0, 8.0, 6.0]
-  }
-}
-```
+![Multi-Camera Stream Screenshot](doc/image003_2.png)
+*(Note: Example of multiple independent camera feeds served via MJPEG over HTTP)*
 
 ## 🧠 Technical Architecture
 
@@ -152,12 +137,10 @@ The Multi-Camera Simulation Engine is built around a modular architecture to ens
 ## 🚧 Limitations & Future Work
 
 ### Current Limitations
-- **Single Camera Stream**: Currently, the engine supports one active camera stream at a time.
 - **Basic Scene**: The 3D scene is currently limited to a cube and a ground plane.
 - **Passive Interface**: The web dashboard is read-only; no interactive controls for the camera are available yet.
 
 ### Future Enhancements
-- **Multi-Camera Support**: Simultaneous rendering and streaming of multiple virtual cameras.
 - **Model Loading**: Support for loading complex 3D models (OBJ, GLTF).
 - **Interactive UI**: Real-time controls for camera movement, FOV, and lighting parameters via the web dashboard.
 - **Post-Processing**: Integration of image effects (noise, lens distortion, color correction).
@@ -192,6 +175,13 @@ Email\
 AhmadrezaRazian@gmail.com
 
 Feel free to contact me for collaboration or questions.
+
+---
+
+### Project Demo Video
+For a demonstration of the multi-camera simulation in action, watch the video below:
+
+![Multi-Camera Simulation Demo](doc/video003_01.mp4)
 
 ---
 *Developed for advanced imaging system simulation and computer vision research.*
