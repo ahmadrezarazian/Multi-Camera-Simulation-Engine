@@ -183,5 +183,10 @@ For a demonstration of the multi-camera simulation in action, watch the video be
 
 ![Multi-Camera Simulation Demo](doc/video003_01.mp4)
 
+[Watch the Demo Video](doc/video003_01.mp4)
+
+<video src="doc/video003_01.mp4" controls="controls" style="max-width: 100%;">
+</video>
+
 ---
 *Developed for advanced imaging system simulation and computer vision research.*
